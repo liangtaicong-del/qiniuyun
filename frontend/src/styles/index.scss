@@ -1,0 +1,584 @@
+/* =========================================================
+   Minimalism Design System — Light Theme
+   ========================================================= */
+:root {
+  --primary: #111111;
+  --primary-dark: #000000;
+  --primary-light: #333333;
+  --primary-bg: transparent;
+  --primary-hover: rgba(0, 0, 0, 0.04);
+
+  --bg-main: #FFFFFF;
+  --bg-card: #FFFFFF;
+  --bg-sidebar: #FFFFFF;
+  --bg-header: #FFFFFF;
+  --bg-input: #FFFFFF;
+  --bg-hover: #FAFAFA;
+  --bg-active: #F5F5F5;
+  --bg-divider: #F0F0F0;
+
+  --text-primary: #111111;
+  --text-secondary: #666666;
+  --text-muted: #999999;
+  --text-placeholder: #CCCCCC;
+  --text-inverse: #FFFFFF;
+
+  --border-color: #E5E5E5;
+  --border-light: #F0F0F0;
+
+  --success: #555555;
+  --success-bg: transparent;
+  --warning: #666666;
+  --warning-bg: transparent;
+  --error: #555555;
+  --error-bg: transparent;
+  --info-bg: transparent;
+
+  --shadow: none;
+  --shadow-hover: none;
+  --shadow-card: none;
+
+  --radius-sm: 2px;
+  --radius-md: 2px;
+  --radius-lg: 2px;
+  --radius-xl: 2px;
+  --radius-full: 2px;
+
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.2s ease;
+  --transition-slow: 0.3s ease;
+
+  --nav-height: 56px;
+  --sidebar-width: 0px;
+  --content-max: 960px;
+}
+
+/* =========================================================
+   Minimalism Design System — Dark Theme
+   ========================================================= */
+[data-theme="dark"] {
+  --primary: #FFFFFF;
+  --primary-dark: #E0E0E0;
+  --primary-light: #CCCCCC;
+  --primary-bg: transparent;
+  --primary-hover: rgba(255, 255, 255, 0.06);
+
+  --bg-main: #0A0A0A;
+  --bg-card: #111111;
+  --bg-sidebar: #111111;
+  --bg-header: #111111;
+  --bg-input: #1A1A1A;
+  --bg-hover: #161616;
+  --bg-active: #1E1E1E;
+  --bg-divider: #1A1A1A;
+
+  --text-primary: #F0F0F0;
+  --text-secondary: #888888;
+  --text-muted: #555555;
+  --text-placeholder: #333333;
+  --text-inverse: #0A0A0A;
+
+  --border-color: #222222;
+  --border-light: #1A1A1A;
+
+  --success: #CCCCCC;
+  --warning: #AAAAAA;
+  --error: #AAAAAA;
+}
+
+/* =========================================================
+   Global Reset
+   ========================================================= */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: "Inter", "PingFang SC", "-apple-system", "Segoe UI", sans-serif;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text-primary);
+  background-color: var(--bg-main);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: var(--primary);
+}
+
+::selection {
+  background-color: var(--text-primary);
+  color: var(--text-inverse);
+}
+
+/* =========================================================
+   Scrollbar — Minimal
+   ========================================================= */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* =========================================================
+   Element Plus — Base Overrides
+   ========================================================= */
+.el-button {
+  border-radius: var(--radius-sm) !important;
+  font-weight: 400 !important;
+  letter-spacing: 0.02em;
+  transition: all var(--transition-fast) !important;
+}
+
+.el-button--primary {
+  background-color: var(--text-primary) !important;
+  border-color: var(--text-primary) !important;
+  color: var(--text-inverse) !important;
+}
+
+.el-button--primary:hover {
+  background-color: var(--primary-dark) !important;
+  border-color: var(--primary-dark) !important;
+  opacity: 0.85;
+}
+
+.el-button--default {
+  background-color: transparent !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+.el-button--default:hover {
+  background-color: var(--bg-hover) !important;
+  border-color: var(--text-secondary) !important;
+  color: var(--text-primary) !important;
+}
+
+.el-button--text {
+  background-color: transparent !important;
+  border: none !important;
+  color: var(--text-secondary) !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.el-button--text:hover {
+  color: var(--text-primary) !important;
+  background-color: transparent !important;
+}
+
+/* =========================================================
+   Element Plus — Input
+   ========================================================= */
+.el-input__wrapper,
+.el-textarea__inner {
+  background-color: var(--bg-input) !important;
+  border-color: var(--border-color) !important;
+  border-radius: var(--radius-sm) !important;
+  box-shadow: none !important;
+  transition: border-color var(--transition-fast) !important;
+}
+
+.el-input__wrapper:hover,
+.el-textarea__inner:hover {
+  border-color: var(--text-muted) !important;
+}
+
+.el-input__wrapper.is-focus,
+.el-textarea__inner:focus {
+  border-color: var(--text-primary) !important;
+  box-shadow: none !important;
+}
+
+.el-input__inner,
+.el-textarea__inner {
+  color: var(--text-primary) !important;
+}
+
+.el-input__inner::placeholder,
+.el-textarea__inner::placeholder {
+  color: var(--text-placeholder) !important;
+}
+
+.el-input.is-disabled .el-input__wrapper {
+  background-color: var(--bg-hover) !important;
+  border-color: var(--border-color) !important;
+  opacity: 0.5;
+}
+
+/* =========================================================
+   Element Plus — Select
+   ========================================================= */
+.el-select__wrapper {
+  background-color: var(--bg-input) !important;
+  border-color: var(--border-color) !important;
+  border-radius: var(--radius-sm) !important;
+  box-shadow: none !important;
+}
+
+.el-select__wrapper:hover {
+  border-color: var(--text-muted) !important;
+}
+
+.el-select__wrapper.is-focused {
+  border-color: var(--text-primary) !important;
+}
+
+.el-select-dropdown {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: var(--radius-sm) !important;
+  box-shadow: none !important;
+}
+
+.el-select-dropdown__item {
+  color: var(--text-primary) !important;
+  border-radius: 0 !important;
+}
+
+.el-select-dropdown__item:hover {
+  background-color: var(--bg-hover) !important;
+}
+
+.el-select-dropdown__item.is-selected {
+  color: var(--text-primary) !important;
+  font-weight: 400 !important;
+  background-color: var(--bg-hover) !important;
+}
+
+/* =========================================================
+   Element Plus — Table
+   ========================================================= */
+.el-table {
+  --el-table-bg-color: transparent;
+  --el-table-tr-bg-color: transparent;
+  --el-table-header-bg-color: transparent;
+  --el-table-row-hover-bg-color: transparent;
+  --el-table-border-color: var(--border-color);
+  --el-table-text-color: var(--text-primary);
+  --el-table-header-text-color: var(--text-secondary);
+  background-color: transparent !important;
+  border: none !important;
+  color: var(--text-primary);
+  font-size: 13px;
+}
+
+.el-table::before {
+  display: none;
+}
+
+.el-table th.el-table__cell {
+  background-color: transparent !important;
+  font-weight: 500;
+  color: var(--text-secondary) !important;
+  border-bottom: 1px solid var(--border-color) !important;
+  padding: 14px 0 !important;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.el-table td.el-table__cell {
+  border-bottom: 1px solid var(--border-light) !important;
+  padding: 16px 0 !important;
+}
+
+.el-table__empty-text {
+  color: var(--text-muted) !important;
+}
+
+/* =========================================================
+   Element Plus — Dialog
+   ========================================================= */
+.el-dialog {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: var(--radius-sm) !important;
+  box-shadow: none !important;
+}
+
+.el-dialog__header {
+  border-bottom: 1px solid var(--border-light) !important;
+  padding: 20px 24px !important;
+  margin-right: 0 !important;
+}
+
+.el-dialog__title {
+  color: var(--text-primary) !important;
+  font-weight: 500;
+  font-size: 15px;
+}
+
+.el-dialog__body {
+  color: var(--text-primary) !important;
+  padding: 24px !important;
+}
+
+.el-dialog__footer {
+  border-top: 1px solid var(--border-light) !important;
+  padding: 16px 24px !important;
+}
+
+/* =========================================================
+   Element Plus — Form
+   ========================================================= */
+.el-form-item__label {
+  color: var(--text-secondary) !important;
+  font-weight: 400;
+  font-size: 13px;
+}
+
+.el-form-item__error {
+  color: var(--error) !important;
+  font-size: 12px;
+}
+
+/* =========================================================
+   Element Plus — Tag
+   ========================================================= */
+.el-tag {
+  border: 1px solid var(--border-color) !important;
+  border-radius: var(--radius-sm) !important;
+  background-color: transparent !important;
+  color: var(--text-secondary) !important;
+  font-weight: 400;
+  font-size: 12px;
+  padding: 0 8px !important;
+  height: 22px !important;
+  line-height: 20px !important;
+}
+
+.el-tag--success {
+  border-color: var(--text-primary) !important;
+  color: var(--text-primary) !important;
+}
+
+.el-tag--warning {
+  border-color: var(--text-secondary) !important;
+  color: var(--text-secondary) !important;
+}
+
+.el-tag--danger {
+  border-color: var(--text-muted) !important;
+  color: var(--text-muted) !important;
+}
+
+/* =========================================================
+   Element Plus — Progress
+   ========================================================= */
+.el-progress-bar__outer {
+  background-color: var(--bg-hover) !important;
+  border-radius: 1px !important;
+}
+
+.el-progress__text {
+  color: var(--text-secondary) !important;
+  font-size: 12px !important;
+}
+
+/* =========================================================
+   Element Plus — Pagination
+   ========================================================= */
+.el-pagination {
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.el-pagination button,
+.el-pager li {
+  background-color: transparent !important;
+  border: none !important;
+  color: var(--text-secondary) !important;
+  border-radius: 0 !important;
+  min-width: 28px !important;
+  height: 28px !important;
+  line-height: 28px !important;
+}
+
+.el-pagination button:hover,
+.el-pager li:hover {
+  color: var(--text-primary) !important;
+}
+
+.el-pager li.is-active {
+  background-color: transparent !important;
+  color: var(--text-primary) !important;
+  font-weight: 600;
+}
+
+/* =========================================================
+   Element Plus — Tabs
+   ========================================================= */
+.el-tabs__nav-wrap::after {
+  background-color: var(--border-color) !important;
+  height: 1px !important;
+}
+
+.el-tabs__item {
+  color: var(--text-muted) !important;
+  font-weight: 400;
+  font-size: 13px;
+  padding: 0 16px !important;
+  height: 44px !important;
+  line-height: 44px !important;
+}
+
+.el-tabs__item:hover {
+  color: var(--text-primary) !important;
+}
+
+.el-tabs__item.is-active {
+  color: var(--text-primary) !important;
+}
+
+.el-tabs__active-bar {
+  background-color: var(--text-primary) !important;
+  height: 1px !important;
+}
+
+/* =========================================================
+   Element Plus — Radio / Checkbox / Switch
+   ========================================================= */
+.el-radio__inner,
+.el-checkbox__inner {
+  background-color: transparent !important;
+  border-color: var(--border-color) !important;
+  border-radius: 0 !important;
+  width: 14px !important;
+  height: 14px !important;
+}
+
+.el-radio__input.is-checked .el-radio__inner,
+.el-checkbox__input.is-checked .el-checkbox__inner {
+  background-color: var(--text-primary) !important;
+  border-color: var(--text-primary) !important;
+}
+
+.el-radio__label,
+.el-checkbox__label {
+  color: var(--text-primary) !important;
+  font-weight: 400;
+}
+
+.el-switch.is-checked .el-switch__core {
+  background-color: var(--text-primary) !important;
+  border-color: var(--text-primary) !important;
+}
+
+/* =========================================================
+   Element Plus — Dropdown
+   ========================================================= */
+.el-dropdown-menu {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: none !important;
+  padding: 4px 0 !important;
+  border-radius: var(--radius-sm) !important;
+}
+
+.el-dropdown-menu__item {
+  color: var(--text-primary) !important;
+  font-size: 13px;
+  padding: 8px 16px !important;
+  border-radius: 0 !important;
+}
+
+.el-dropdown-menu__item:hover {
+  background-color: var(--bg-hover) !important;
+  color: var(--text-primary) !important;
+}
+
+/* =========================================================
+   Element Plus — Avatar
+   ========================================================= */
+.el-avatar {
+  background-color: var(--bg-hover) !important;
+  color: var(--text-secondary) !important;
+  border-radius: 0 !important;
+}
+
+/* =========================================================
+   Element Plus — Tooltip / Popover
+   ========================================================= */
+.el-tooltip__popper,
+.el-popper.is-light {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--text-primary) !important;
+  border-radius: var(--radius-sm) !important;
+  box-shadow: none !important;
+}
+
+/* =========================================================
+   Element Plus — Upload
+   ========================================================= */
+.el-upload-dragger {
+  background-color: transparent !important;
+  border: 1px dashed var(--border-color) !important;
+  border-radius: 0 !important;
+}
+
+.el-upload-dragger:hover {
+  border-color: var(--text-secondary) !important;
+}
+
+/* =========================================================
+   Element Plus — Message Box
+   ========================================================= */
+.el-message-box {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: var(--radius-sm) !important;
+}
+
+/* =========================================================
+   Transitions
+   ========================================================= */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity var(--transition-base);
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.slide-fade-enter-active {
+  transition: all var(--transition-slow);
+}
+
+.slide-fade-leave-active {
+  transition: all var(--transition-fast);
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateY(-6px);
+  opacity: 0;
+}

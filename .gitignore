@@ -1,0 +1,46 @@
+# Build outputs
+backend/target/
+backend/*.jar
+frontend/dist/
+frontend/node_modules/
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+*.swp
+*.swo
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Database (local H2 data)
+data/
+*.db
+*.mv.db
+*.trace.db
+
+# Maven
+backend/pom.xml.tag
+backend/pom.xml.releaseBackup
+backend/pom.xml.versionsBackup
+
+# Gradle
+.gradle/
+build/
+
+# Misc
+*.bak
+*.tmp
