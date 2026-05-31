@@ -5,7 +5,6 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
@@ -18,12 +17,28 @@ public class JwtUtils {
     @Value("${app.jwt.expiration}")
     private long jwtExpiration;
 
-    private SecretKey getSigningKey() {
+    private javax.crypto.SecretKey getSigningKey() {
         byte[] keyBytes = jwtSecret.getBytes(StandardCharsets.UTF_8);
         if (keyBytes.length < 32) {
-            throw new IllegalStateException("JWT secret must be at least 32 characters");
+            throw new IllegalStateException(
+                "JWT secret must be at least 32 characters. " +
+                "Set the JWT_SECRET environment variable with a secure random string.");
         }
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    @jakarta.annotation.PostConstruct
+    public void validateSecret() {
+        if (jwtSecret == null || jwtSecret.isBlank()) {
+            throw new IllegalStateException(
+                "JWT_SECRET environment variable is not set. " +
+                "Please set a secure secret key before starting the application.");
+        }
+        byte[] keyBytes = jwtSecret.getBytes(StandardCharsets.UTF_8);
+        if (keyBytes.length < 32) {
+            throw new IllegalStateException(
+                "JWT secret must be at least 32 characters (256 bits) for HS256 signing.");
+        }
     }
 
     public String generateToken(Long userId, String username) {

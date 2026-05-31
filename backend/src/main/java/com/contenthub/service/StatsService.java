@@ -54,18 +54,20 @@ public class StatsService {
 
     private Map<String, Integer> buildDailyTrend(Long userId, Article.ArticleStatus status) {
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate today = LocalDate.now();
 
         Map<String, Integer> result = new LinkedHashMap<>();
         for (int i = 6; i >= 0; i--) {
-            LocalDate date = LocalDate.now().minusDays(i);
-            result.put(date.format(fmt), 0);
+            result.put(today.minusDays(i).format(fmt), 0);
         }
 
-        List<Article> articles = articleRepository.findByUserIdAndStatus(userId, status,
-                org.springframework.data.domain.Pageable.unpaged()).getContent();
+        LocalDate weekAgo = today.minusDays(6);
+        List<Article> articles = articleRepository
+                .findByUserIdAndCreatedAtGreaterThanEqual(userId, weekAgo.atStartOfDay(),
+                        org.springframework.data.domain.Pageable.unpaged()).getContent();
 
         for (Article article : articles) {
-            if (article.getCreatedAt() != null) {
+            if (article.getCreatedAt() != null && article.getStatus() == status) {
                 String dateKey = article.getCreatedAt().toLocalDate().format(fmt);
                 if (result.containsKey(dateKey)) {
                     result.put(dateKey, result.get(dateKey) + 1);

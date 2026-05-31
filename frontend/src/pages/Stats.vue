@@ -87,7 +87,7 @@ import { ref, reactive, computed, onMounted, onActivated, onBeforeUnmount, shall
 import { getOverviewStats, getPlatformStats } from '@/api/stats'
 import * as echarts from 'echarts'
 import dayjs from 'dayjs'
-import { FileText as FileTextIcon, CheckCircle as CheckCircleIcon, TrendingUp as TrendingUpIcon, Target as TargetIcon, MessageCircle as MessageCircleIcon, Share2 as Share2Icon, HelpCircle as HelpCircleIcon, BookOpen as BookOpenIcon, Monitor as MonitorIcon, Gem as GemIcon, Globe as GlobeIcon, FileText as FileTextIconAlt } from 'lucide-vue-next'
+import { FileText as FileTextIcon, CheckCircle as CheckCircleIcon, TrendingUp as TrendingUpIcon, Target as TargetIcon, MessageCircle as MessageCircleIcon, Share2 as Share2Icon, HelpCircle as HelpCircleIcon, BookOpen as BookOpenIcon, Monitor as MonitorIcon, Gem as GemIcon, Globe as GlobeIcon } from 'lucide-vue-next'
 
 const stats = reactive({ overview: {}, platforms: [], trend: {} })
 const trendChartRef = ref(null)
@@ -102,7 +102,7 @@ const successRate = computed(() => {
   return Math.round((success / total) * 100)
 })
 
-const platformIcons = { WECHAT: MessageCircleIcon, WEIBO: Share2Icon, ZHIHU: HelpCircleIcon, JIANSHU: BookOpenIcon, CSDN: MonitorIcon, JUEJIN: GemIcon, BAIJIA: GlobeIcon, TOUTIAO: FileTextIconAlt }
+const platformIcons = { WECHAT: MessageCircleIcon, WEIBO: Share2Icon, ZHIHU: HelpCircleIcon, JIANSHU: BookOpenIcon, CSDN: MonitorIcon, JUEJIN: GemIcon, BAIJIA: GlobeIcon, TOUTIAO: FileTextIcon }
 const getPlatformIcon = (platform) => platformIcons[platform] || GlobeIcon
 const getPlatformRate = (row) => { if (!row.totalCount) return 0; return Math.round((row.successCount / row.totalCount) * 100) }
 

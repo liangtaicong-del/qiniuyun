@@ -20,25 +20,26 @@ public class AuthInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String path = request.getRequestURI();
 
-        if (path.startsWith("/api/auth/") || path.startsWith("/h2-console") || path.equals("/error") || path.startsWith("/api/debug")) {
+        if (path.startsWith("/api/auth/") || path.equals("/error") || path.startsWith("/api/debug")) {
             return true;
+        }
+
+        if (path.equals("/h2-console") || path.startsWith("/h2-console")) {
+            response.sendRedirect("/");
+            return false;
         }
 
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json");
-            response.getWriter().write("{\"success\":false,\"message\":\"Unauthorized\"}");
+            sendUnauthorized(response, "Unauthorized: missing or invalid Authorization header");
             return false;
         }
 
         String token = authHeader.substring(7);
 
         if (!jwtUtils.validateToken(token)) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json");
-            response.getWriter().write("{\"success\":false,\"message\":\"Invalid token\"}");
+            sendUnauthorized(response, "Unauthorized: invalid or expired token");
             return false;
         }
 
@@ -46,13 +47,19 @@ public class AuthInterceptor implements HandlerInterceptor {
         User user = userRepository.findById(userId).orElse(null);
 
         if (user == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json");
-            response.getWriter().write("{\"success\":false,\"message\":\"User not found\"}");
+            sendUnauthorized(response, "Unauthorized: user not found");
             return false;
         }
 
         request.setAttribute("userId", userId);
         return true;
+    }
+
+    private void sendUnauthorized(HttpServletResponse response, String message) throws Exception {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write("{\"success\":false,\"message\":\"" + message + "\"}");
+        response.getWriter().flush();
     }
 }

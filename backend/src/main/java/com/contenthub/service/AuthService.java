@@ -20,6 +20,7 @@ public class AuthService {
     private final UserSettingsRepository userSettingsRepository;
     private final JwtUtils jwtUtils;
     private final PasswordEncoder passwordEncoder;
+    private final RefreshTokenService refreshTokenService;
 
     @Transactional
     public AuthResponse register(RegisterRequest request) {
@@ -41,7 +42,8 @@ public class AuthService {
         user = userRepository.save(user);
 
         String token = jwtUtils.generateToken(user.getId(), user.getUsername());
-        return buildAuthResponse(token, user);
+        String refreshToken = refreshTokenService.createRefreshToken(user);
+        return buildAuthResponse(token, refreshToken, user);
     }
 
     public AuthResponse login(LoginRequest request) {
@@ -53,12 +55,14 @@ public class AuthService {
         }
 
         String token = jwtUtils.generateToken(user.getId(), user.getUsername());
-        return buildAuthResponse(token, user);
+        String refreshToken = refreshTokenService.createRefreshToken(user);
+        return buildAuthResponse(token, refreshToken, user);
     }
 
-    private AuthResponse buildAuthResponse(String token, User user) {
+    private AuthResponse buildAuthResponse(String token, String refreshToken, User user) {
         return AuthResponse.builder()
                 .token(token)
+                .refreshToken(refreshToken)
                 .user(AuthResponse.UserDTO.builder()
                         .id(user.getId())
                         .username(user.getUsername())

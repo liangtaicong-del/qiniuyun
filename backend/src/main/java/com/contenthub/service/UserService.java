@@ -8,6 +8,7 @@ import com.contenthub.entity.User;
 import com.contenthub.exception.BadRequestException;
 import com.contenthub.exception.ResourceNotFoundException;
 import com.contenthub.repository.UserRepository;
+import com.contenthub.service.EmailCodeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailCodeService emailCodeService;
 
     public AuthResponse.UserDTO getProfile(Long userId) {
         User user = userRepository.findById(userId)
@@ -69,6 +71,19 @@ public class UserService {
         }
 
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
+    }
+
+    @Transactional
+    public void resetPassword(String email, String code, String newPassword) {
+        if (!emailCodeService.verifyCode(email, code)) {
+            throw new BadRequestException("验证码无效或已过期");
+        }
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new BadRequestException("该邮箱未注册"));
+
+        user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
     }
 }

@@ -28,4 +28,10 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
     long countByUserId(Long userId);
 
     long countByUserIdAndStatus(Long userId, Article.ArticleStatus status);
+
+    @Query("SELECT a FROM Article a WHERE a.user.id = :userId AND a.createdAt >= :from ORDER BY a.createdAt DESC")
+    Page<Article> findByUserIdAndCreatedAtGreaterThanEqual(
+            @Param("userId") Long userId,
+            @Param("from") java.time.LocalDateTime from,
+            Pageable pageable);
 }

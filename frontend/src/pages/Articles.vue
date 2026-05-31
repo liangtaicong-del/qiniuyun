@@ -90,10 +90,15 @@ const handleSearch = () => {
   searchTimer = setTimeout(() => { currentPage.value = 1; loadArticles() }, 300)
 }
 
-const loadArticles = async () => {
+    const loadArticles = async () => {
   loading.value = true
   try {
-    const res = await getArticles({ page: currentPage.value - 1, size: pageSize.value })
+    const res = await getArticles({
+      page: currentPage.value - 1,
+      size: pageSize.value,
+      keyword: searchKeyword.value || undefined,
+      status: filterStatus.value || undefined
+    })
     articles.value = res.data?.data?.content || res.data?.data || []
     total.value = res.data?.data?.totalElements || articles.value.length
   } catch (e) { console.error('Failed to load articles:', e); articles.value = [] }

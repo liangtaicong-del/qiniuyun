@@ -91,7 +91,7 @@ import {
   ArrowLeft as ArrowLeftIcon, Bold as BoldIcon, Italic as ItalicIcon,
   Strikethrough as StrikeIcon, Code as CodeIcon, List as ListIcon,
   ListOrdered as OrderedListIcon, Quote as QuoteIcon, Minus as MinusIcon,
-  Link as LinkIcon, Image as ImageIcon, Check as CheckIcon,
+  Link as LinkIcon, Check as CheckIcon,
   MessageCircle as MessageCircleIcon, Share2 as Share2Icon, HelpCircle as HelpCircleIcon,
   BookOpen as BookOpenIcon, Monitor as MonitorIcon, Gem as GemIcon,
   Globe as GlobeIcon, FileText as FileTextIcon
