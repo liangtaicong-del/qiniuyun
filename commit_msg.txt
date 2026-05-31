@@ -1,0 +1,4 @@
+feat: 前后端代码初始化
+
+后端：Spring Boot + JWT 认证，实现文章管理、多平台发布、定时任务、用户设置、数据统计
+前端：Vue 3 + Element Plus + Tiptap 编辑器 + ECharts，支持 8 个平台的内容发布

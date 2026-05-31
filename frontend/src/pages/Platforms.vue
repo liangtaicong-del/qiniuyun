@@ -76,10 +76,10 @@ const allPlatforms = [
 const loadPlatforms = async () => {
   try {
     const [allRes, userRes] = await Promise.all([
-      getAllPlatforms().catch(() => ({ data: allPlatforms })),
-      getUserPlatforms().catch(() => ({ data: [] }))
+      getAllPlatforms().catch(() => ({ data: { data: allPlatforms } })),
+      getUserPlatforms().catch(() => ({ data: { data: [] } }))
     ])
-    const userPlatforms = userRes.data || []
+    const userPlatforms = userRes.data?.data || []
     platforms.value = allPlatforms.map(p => {
       const bound = userPlatforms.find(up => up.platform === p.id)
       return { ...p, bound: !!bound, accountName: bound?.accountName, bindTime: bound?.bindTime }

@@ -73,7 +73,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, onMounted, onActivated, onBeforeUnmount } from 'vue'
 import { getPublishTasks, cancelTask, retryTask } from '@/api/publish'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { MessageCircle as MessageCircleIcon, Share2 as Share2Icon, HelpCircle as HelpCircleIcon, BookOpen as BookOpenIcon, Monitor as MonitorIcon, Gem as GemIcon, FileText as FileTextIcon, Globe as GlobeIcon } from 'lucide-vue-next'
@@ -98,8 +98,8 @@ const loadTasks = async () => {
     const params = { page: currentPage.value - 1, size: pageSize.value }
     if (activeTab.value !== 'all') params.status = activeTab.value
     const res = await getPublishTasks(params)
-    tasks.value = res.data?.content || res.data || []
-    total.value = res.data?.totalElements || tasks.value.length
+    tasks.value = res.data?.data?.content || res.data?.data || []
+    total.value = res.data?.data?.totalElements || tasks.value.length
   } catch (e) { console.error('Failed to load tasks:', e); ElMessage.error('加载失败'); tasks.value = [] }
   finally { loading.value = false }
 }
@@ -124,6 +124,7 @@ const handleRetry = async (task) => {
 const openUrl = (url) => { window.open(url, '_blank') }
 
 onMounted(() => { loadTasks() })
+onActivated(() => { loadTasks() })
 </script>
 
 <style lang="scss" scoped>

@@ -13,25 +13,25 @@ export const useUserStore = defineStore('user', () => {
 
   const login = async (username, password) => {
     const res = await api.post('/auth/login', { username, password })
-    token.value = res.data?.token
+    token.value = res.data?.data?.token
     isLoggedIn.value = true
     localStorage.setItem('token', token.value)
-    if (res.data?.user) {
-      userInfo.value = res.data.user
-      localStorage.setItem('userInfo', JSON.stringify(res.data.user))
+    if (res.data?.data?.user) {
+      userInfo.value = res.data.data.user
+      localStorage.setItem('userInfo', JSON.stringify(res.data.data.user))
     }
     return res
   }
 
   const register = async (username, email, password) => {
     const res = await api.post('/auth/register', { username, email, password })
-    if (res.data?.token) {
-      token.value = res.data.token
+    if (res.data?.data?.token) {
+      token.value = res.data.data.token
       isLoggedIn.value = true
       localStorage.setItem('token', token.value)
-      if (res.data?.user) {
-        userInfo.value = res.data.user
-        localStorage.setItem('userInfo', JSON.stringify(res.data.user))
+      if (res.data?.data?.user) {
+        userInfo.value = res.data.data.user
+        localStorage.setItem('userInfo', JSON.stringify(res.data.data.user))
       }
     }
     return res
@@ -50,8 +50,8 @@ export const useUserStore = defineStore('user', () => {
     if (!token.value) return
     try {
       const res = await api.get('/user/profile')
-      userInfo.value = res.data
-      localStorage.setItem('userInfo', JSON.stringify(res.data))
+      userInfo.value = res.data?.data
+      localStorage.setItem('userInfo', JSON.stringify(res.data?.data))
     } catch (e) {
       console.error('Failed to fetch user info:', e)
     }

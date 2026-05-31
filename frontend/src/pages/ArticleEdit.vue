@@ -156,12 +156,12 @@ const loadArticle = async () => {
   if (!isEdit.value) return
   try {
     const res = await getArticle(route.params.id)
-    const data = res.data
-    form.title = data.title || ''
-    form.summary = data.summary || ''
-    form.tags = data.tags || []
-    form.tagsInput = (data.tags || []).join(', ')
-    if (editor.value && data.content) editor.value.commands.setContent(data.content)
+    const data = res.data?.data
+    form.title = data?.title || ''
+    form.summary = data?.summary || ''
+    form.tags = data?.tags || []
+    form.tagsInput = (data?.tags || []).join(', ')
+    if (editor.value && data?.content) editor.value.commands.setContent(data.content)
   } catch (e) { console.error('Failed to load article:', e) }
 }
 
@@ -173,7 +173,7 @@ const handleSaveDraft = async () => {
     if (isEdit.value) await updateArticle(route.params.id, payload)
     else {
       const res = await createArticle(payload)
-      router.replace(`/articles/${res.data.id}/edit`)
+      router.replace(`/articles/${res.data?.data?.id}/edit`)
     }
     ElMessage.success('草稿已保存')
   } catch (e) { console.error('Save draft failed:', e) }
@@ -187,7 +187,7 @@ const handlePublish = async () => {
     let articleId = route.params.id
     if (!isEdit.value) {
       const res = await createArticle({ title: form.title, summary: form.summary, content: form.content, tags: form.tags, status: 'DRAFT' })
-      articleId = res.data.id
+      articleId = res.data?.data?.id
     }
     if (selectedPlatforms.value.length > 0) {
       await publishArticle(articleId, selectedPlatforms.value, form.scheduled ? dayjs(form.scheduledAt).valueOf() : null)

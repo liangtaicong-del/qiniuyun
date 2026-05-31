@@ -125,7 +125,7 @@ const settings = reactive({
 const loadSettings = async () => {
   try {
     const res = await getSettings()
-    const data = res.data || {}
+    const data = res.data?.data || {}
     Object.assign(settings, {
       defaultPlatform: data.defaultPlatform || '',
       autoPublish: data.autoPublish ?? false,

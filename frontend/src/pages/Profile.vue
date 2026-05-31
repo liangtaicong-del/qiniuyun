@@ -119,11 +119,12 @@ const handleAvatarChange = (e) => {
 const loadProfile = async () => {
   try {
     const res = await getProfile()
-    userInfo.value = res.data
-    profileForm.username = res.data.username
-    profileForm.bio = res.data.bio || ''
-    profileForm.avatar = res.data.avatar || ''
-    if (res.data.avatar) avatarPreview.value = res.data.avatar
+    const data = res.data?.data
+    userInfo.value = data
+    profileForm.username = data?.username || ''
+    profileForm.bio = data?.bio || ''
+    profileForm.avatar = data?.avatar || ''
+    if (data?.avatar) avatarPreview.value = data.avatar
   } catch (e) { console.error('Failed to load profile:', e) }
 }
 

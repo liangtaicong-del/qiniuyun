@@ -94,15 +94,15 @@ const formatDate = (date) => dayjs(date).format('MM-DD HH:mm')
 const loadData = async () => {
   try {
     const [statsRes, articlesRes, platformsRes] = await Promise.all([
-      getOverviewStats().catch(() => ({ data: { overview: stats } })),
-      getRecentArticles(5).catch(() => ({ data: [] })),
-      getUserPlatforms().catch(() => ({ data: [] }))
+      getOverviewStats().catch(() => ({ data: { data: { overview: stats } } })),
+      getRecentArticles(5).catch(() => ({ data: { data: [] } })),
+      getUserPlatforms().catch(() => ({ data: { data: [] } }))
     ])
-    if (statsRes.data?.overview) Object.assign(stats, statsRes.data.overview)
-    if (statsRes.data?.draftTrend) draftTrend.value = statsRes.data.draftTrend
-    if (statsRes.data?.publishedTrend) publishedTrend.value = statsRes.data.publishedTrend
-    if (statsRes.data?.platforms) platformStats.value = statsRes.data.platforms
-    if (articlesRes.data) recentArticles.value = Array.isArray(articlesRes.data) ? articlesRes.data : []
+    if (statsRes.data?.data?.overview) Object.assign(stats, statsRes.data.data.overview)
+    if (statsRes.data?.data?.draftTrend) draftTrend.value = statsRes.data.data.draftTrend
+    if (statsRes.data?.data?.publishedTrend) publishedTrend.value = statsRes.data.data.publishedTrend
+    if (statsRes.data?.data?.platforms) platformStats.value = statsRes.data.data.platforms
+    if (articlesRes.data?.data) recentArticles.value = Array.isArray(articlesRes.data.data) ? articlesRes.data.data : []
     await nextTick()
     initTrendChart()
     initPlatformChart()
@@ -117,7 +117,9 @@ const getChartColors = () => {
     text: isDark ? '#F0F0F0' : '#111111',
     muted: isDark ? '#555555' : '#999999',
     border: isDark ? '#222222' : '#E5E5E5',
-    grid: isDark ? '#1A1A1A' : '#F0F0F0'
+    grid: isDark ? '#1A1A1A' : '#F0F0F0',
+    tooltipBg: isDark ? '#1E1E1E' : '#FFFFFF',
+    tooltipText: isDark ? '#E0E0E0' : '#222222'
   }
 }
 
@@ -134,7 +136,7 @@ const initTrendChart = () => {
     publishedData.push(publishedTrend.value[d] || 0)
   }
   trendChart.value.setOption({
-    tooltip: { trigger: 'axis', backgroundColor: c.text, borderColor: c.border, textStyle: { color: c.text } },
+    tooltip: { trigger: 'axis', backgroundColor: c.tooltipBg, borderColor: c.border, textStyle: { color: c.tooltipText } },
     legend: { data: ['草稿', '已发布'], top: 0, textStyle: { color: c.muted, fontSize: 12 } },
     grid: { left: 40, right: 20, top: 36, bottom: 30 },
     xAxis: { type: 'category', data: days, axisLine: { lineStyle: { color: c.border } }, axisLabel: { color: c.muted } },
@@ -152,9 +154,9 @@ const initPlatformChart = () => {
   const c = getChartColors()
   const platforms = platformStats.value.filter(p => p.totalCount > 0)
   platformChart.value?.setOption({
-    tooltip: { trigger: 'axis', backgroundColor: c.text, borderColor: c.border, textStyle: { color: c.text } },
-    grid: { left: 50, right: 20, top: 20, bottom: 30 },
-    xAxis: { type: 'category', data: platforms.map(p => p.platformName || p.platform), axisLine: { lineStyle: { color: c.border } }, axisLabel: { color: c.muted, rotate: 30 } },
+    tooltip: { trigger: 'axis', backgroundColor: c.tooltipBg, borderColor: c.border, textStyle: { color: c.tooltipText } },
+    grid: { left: 50, right: 20, top: 20, bottom: 50 },
+    xAxis: { type: 'category', data: platforms.map(p => p.platformName || p.platform), axisLine: { lineStyle: { color: c.border } }, axisLabel: { color: c.muted, rotate: 0 } },
     yAxis: { type: 'value', splitLine: { lineStyle: { color: c.grid } }, axisLabel: { color: c.muted } },
     series: [{ type: 'bar', data: platforms.map(p => p.totalCount || 0), itemStyle: { color: c.text } }]
   })

@@ -83,7 +83,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted, onBeforeUnmount, shallowRef, nextTick } from 'vue'
+import { ref, reactive, computed, onMounted, onActivated, onBeforeUnmount, shallowRef, nextTick } from 'vue'
 import { getOverviewStats, getPlatformStats } from '@/api/stats'
 import * as echarts from 'echarts'
 import dayjs from 'dayjs'
@@ -108,15 +108,15 @@ const getPlatformRate = (row) => { if (!row.totalCount) return 0; return Math.ro
 
 const getChartColors = () => {
   const isDark = document.documentElement.getAttribute('data-theme') === 'dark'
-  return { text: isDark ? '#F0F0F0' : '#111111', muted: isDark ? '#555555' : '#999999', border: isDark ? '#222222' : '#E5E5E5', grid: isDark ? '#1A1A1A' : '#F0F0F0' }
+  return { text: isDark ? '#F0F0F0' : '#111111', muted: isDark ? '#555555' : '#999999', border: isDark ? '#222222' : '#E5E5E5', grid: isDark ? '#1A1A1A' : '#F0F0F0', tooltipBg: isDark ? '#1E1E1E' : '#FFFFFF', tooltipText: isDark ? '#E0E0E0' : '#222222' }
 }
 
 const loadStats = async () => {
   try {
-    const [overviewRes, platformRes] = await Promise.all([getOverviewStats().catch(() => ({ data: {} })), getPlatformStats().catch(() => ({ data: [] }))])
-    if (overviewRes.data?.overview) stats.overview = overviewRes.data.overview
-    if (overviewRes.data?.draftTrend) stats.trend = overviewRes.data.draftTrend
-    if (platformRes.data) stats.platforms = platformRes.data
+    const [overviewRes, platformRes] = await Promise.all([getOverviewStats().catch(() => ({ data: { data: {} } })), getPlatformStats().catch(() => ({ data: { data: [] } }))])
+    if (overviewRes.data?.data?.overview) stats.overview = overviewRes.data.data.overview
+    if (overviewRes.data?.data?.draftTrend) stats.trend = overviewRes.data.data.draftTrend
+    if (platformRes.data?.data) stats.platforms = platformRes.data.data
     await nextTick()
     initTrendChart()
     initPlatformChart()
@@ -136,7 +136,7 @@ const initTrendChart = () => {
     fail.push(0)
   }
   trendChart.value.setOption({
-    tooltip: { trigger: 'axis', backgroundColor: c.text, borderColor: c.border, textStyle: { color: c.text } },
+    tooltip: { trigger: 'axis', backgroundColor: c.tooltipBg, borderColor: c.border, textStyle: { color: c.tooltipText } },
     legend: { data: ['成功', '失败'], top: 0, textStyle: { color: c.muted, fontSize: 12 } },
     grid: { left: 40, right: 20, top: 36, bottom: 30 },
     xAxis: { type: 'category', data: days, axisLine: { lineStyle: { color: c.border } }, axisLabel: { color: c.muted } },
@@ -154,15 +154,16 @@ const initPlatformChart = () => {
   const c = getChartColors()
   const data = stats.platforms.filter(p => p.totalCount > 0)
   platformChart.value.setOption({
-    tooltip: { trigger: 'axis', backgroundColor: c.text, borderColor: c.border, textStyle: { color: c.text } },
+    tooltip: { trigger: 'axis', backgroundColor: c.tooltipBg, borderColor: c.border, textStyle: { color: c.tooltipText } },
     grid: { left: 50, right: 20, top: 20, bottom: 60 },
-    xAxis: { type: 'category', data: data.map(p => p.platformName), axisLine: { lineStyle: { color: c.border } }, axisLabel: { color: c.muted, rotate: 30 } },
+    xAxis: { type: 'category', data: data.map(p => p.platformName), axisLine: { lineStyle: { color: c.border } }, axisLabel: { color: c.muted, rotate: 0 } },
     yAxis: { type: 'value', splitLine: { lineStyle: { color: c.grid } }, axisLabel: { color: c.muted } },
     series: [{ type: 'bar', data: data.map(p => p.totalCount), itemStyle: { color: c.text } }]
   })
 }
 
 onMounted(() => { loadStats(); window.addEventListener('resize', () => { trendChart.value?.resize(); platformChart.value?.resize() }) })
+onActivated(() => { loadStats() })
 onBeforeUnmount(() => { window.removeEventListener('resize', () => { trendChart.value?.resize(); platformChart.value?.resize() }); trendChart.value?.dispose(); platformChart.value?.dispose() })
 </script>
 

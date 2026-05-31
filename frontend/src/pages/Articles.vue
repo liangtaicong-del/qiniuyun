@@ -68,7 +68,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onActivated } from 'vue'
 import { getArticles, deleteArticle } from '@/api/article'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import dayjs from 'dayjs'
@@ -94,8 +94,8 @@ const loadArticles = async () => {
   loading.value = true
   try {
     const res = await getArticles({ page: currentPage.value - 1, size: pageSize.value })
-    articles.value = res.data?.content || res.data || []
-    total.value = res.data?.totalElements || articles.value.length
+    articles.value = res.data?.data?.content || res.data?.data || []
+    total.value = res.data?.data?.totalElements || articles.value.length
   } catch (e) { console.error('Failed to load articles:', e); articles.value = [] }
   finally { loading.value = false }
 }
@@ -112,6 +112,7 @@ const handleDelete = async (article) => {
 }
 
 onMounted(() => { loadArticles() })
+onActivated(() => { loadArticles() })
 </script>
 
 <style lang="scss" scoped>
