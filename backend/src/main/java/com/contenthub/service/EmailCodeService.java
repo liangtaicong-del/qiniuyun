@@ -1,5 +1,7 @@
 package com.contenthub.service;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
@@ -8,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.*;
 
 @Slf4j
 @Service
@@ -23,12 +25,41 @@ public class EmailCodeService {
     private final JavaMailSender mailSender;
     private final Map<String, CodeEntry> codeStore = new ConcurrentHashMap<>();
     private final SecureRandom random = new SecureRandom();
+    private final ScheduledExecutorService cleanupExecutor = Executors.newSingleThreadScheduledExecutor(r -> {
+        Thread t = new Thread(r, "email-code-cleanup");
+        t.setDaemon(true);
+        return t;
+    });
 
     private static final int CODE_LENGTH = 6;
     private static final long CODE_TTL_MS = 5 * 60 * 1000L;
+    private static final long CLEANUP_INTERVAL_MS = 2 * 60 * 1000L;
 
     public EmailCodeService(JavaMailSender mailSender) {
         this.mailSender = mailSender;
+    }
+
+    @PostConstruct
+    public void init() {
+        cleanupExecutor.scheduleAtFixedRate(this::cleanupExpiredCodes, CLEANUP_INTERVAL_MS, CLEANUP_INTERVAL_MS, TimeUnit.MILLISECONDS);
+    }
+
+    @PreDestroy
+    public void destroy() {
+        cleanupExecutor.shutdown();
+        try {
+            if (!cleanupExecutor.awaitTermination(5, TimeUnit.SECONDS)) {
+                cleanupExecutor.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            cleanupExecutor.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    private void cleanupExpiredCodes() {
+        long now = System.currentTimeMillis();
+        codeStore.entrySet().removeIf(entry -> now > entry.getValue().expiresAt());
     }
 
     public String generateCode(String email) {
@@ -42,11 +73,11 @@ public class EmailCodeService {
         if (entry == null) {
             return false;
         }
-        if (System.currentTimeMillis() > entry.expiresAt) {
+        if (System.currentTimeMillis() > entry.expiresAt()) {
             codeStore.remove(email);
             return false;
         }
-        if (entry.code.equals(code)) {
+        if (entry.code().equals(code)) {
             codeStore.remove(email);
             return true;
         }

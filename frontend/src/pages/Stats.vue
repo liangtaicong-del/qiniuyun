@@ -162,9 +162,10 @@ const initPlatformChart = () => {
   })
 }
 
-onMounted(() => { loadStats(); window.addEventListener('resize', () => { trendChart.value?.resize(); platformChart.value?.resize() }) })
+const handleResize = () => { trendChart.value?.resize(); platformChart.value?.resize() }
+onMounted(() => { loadStats(); window.addEventListener('resize', handleResize) })
 onActivated(() => { loadStats() })
-onBeforeUnmount(() => { window.removeEventListener('resize', () => { trendChart.value?.resize(); platformChart.value?.resize() }); trendChart.value?.dispose(); platformChart.value?.dispose() })
+onBeforeUnmount(() => { window.removeEventListener('resize', handleResize); trendChart.value?.dispose(); platformChart.value?.dispose() })
 </script>
 
 <style lang="scss" scoped>

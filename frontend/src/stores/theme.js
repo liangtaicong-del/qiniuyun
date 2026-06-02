@@ -31,12 +31,11 @@ export const useThemeStore = defineStore('theme', () => {
     }
   }
 
-  if (typeof window !== 'undefined') {
-    const mq = window.matchMedia('(prefers-color-scheme: dark)')
-    mq.addEventListener('change', () => {
-      if (theme.value === 'auto') applyAutoTheme()
-    })
+  const mq = window.matchMedia('(prefers-color-scheme: dark)')
+  const onThemeChange = () => {
+    if (theme.value === 'auto') applyAutoTheme()
   }
+  mq.addEventListener('change', onThemeChange)
 
-  return { theme, setTheme, initTheme }
+  return { theme, setTheme, initTheme, _cleanup: () => mq.removeEventListener('change', onThemeChange) }
 })

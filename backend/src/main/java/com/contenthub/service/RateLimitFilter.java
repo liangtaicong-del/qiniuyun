@@ -3,6 +3,8 @@ package com.contenthub.service;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.Refill;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -15,7 +17,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.*;
 
 @Slf4j
 @Component
@@ -24,6 +26,11 @@ public class RateLimitFilter implements Filter {
 
     private final Map<String, Bucket> buckets = new ConcurrentHashMap<>();
     private final Map<String, Bucket> globalBuckets = new ConcurrentHashMap<>();
+    private final ScheduledExecutorService cleanupExecutor = Executors.newSingleThreadScheduledExecutor(r -> {
+        Thread t = new Thread(r, "rate-limit-cleanup");
+        t.setDaemon(true);
+        return t;
+    });
 
     @Value("${app.ratelimit.requests-per-minute:60}")
     private int requestsPerMinute;
@@ -33,6 +40,39 @@ public class RateLimitFilter implements Filter {
 
     @Value("${app.ratelimit.global-requests-per-minute:300}")
     private int globalRequestsPerMinute;
+
+    private static final long CLEANUP_INTERVAL_MS = 5 * 60 * 1000L;
+    private static final long BUCKET_IDLE_TTL_MS = 30 * 60 * 1000L;
+    private final Map<String, Long> lastAccess = new ConcurrentHashMap<>();
+
+    @PostConstruct
+    public void init() {
+        cleanupExecutor.scheduleAtFixedRate(this::evictIdleBuckets, CLEANUP_INTERVAL_MS, CLEANUP_INTERVAL_MS, TimeUnit.MILLISECONDS);
+    }
+
+    @PreDestroy
+    public void destroy() {
+        cleanupExecutor.shutdown();
+        try {
+            if (!cleanupExecutor.awaitTermination(5, TimeUnit.SECONDS)) {
+                cleanupExecutor.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            cleanupExecutor.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    private void evictIdleBuckets() {
+        long now = System.currentTimeMillis();
+        lastAccess.entrySet().removeIf(entry -> {
+            if (now - entry.getValue() > BUCKET_IDLE_TTL_MS) {
+                buckets.remove(entry.getKey());
+                return true;
+            }
+            return false;
+        });
+    }
 
     private Bucket createBucket() {
         Bandwidth limit = Bandwidth.classic(requestsPerMinute,
@@ -76,6 +116,7 @@ public class RateLimitFilter implements Filter {
         }
 
         String clientIp = getClientIp(request);
+        lastAccess.put(clientIp, System.currentTimeMillis());
         Bucket perIpBucket = buckets.computeIfAbsent(clientIp, k -> createBucket());
 
         if (perIpBucket.tryConsume(1)) {

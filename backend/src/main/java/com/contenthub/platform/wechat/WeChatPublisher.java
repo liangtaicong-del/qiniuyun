@@ -15,9 +15,13 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.*;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 @Slf4j
 @Component
 public class WeChatPublisher implements PlatformPublisher {
+
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     @Value("${app.platform.wechat.app-id:}")
     private String appId;
@@ -276,8 +280,7 @@ public class WeChatPublisher implements PlatformPublisher {
     private Map<String, Object> parseJson(String json) {
         if (json == null || json.isBlank()) return null;
         try {
-            var mapper = new com.fasterxml.jackson.databind.ObjectMapper();
-            return mapper.readValue(json, Map.class);
+            return OBJECT_MAPPER.readValue(json, Map.class);
         } catch (Exception e) {
             log.error("JSON 解析失败: {}", json, e);
             return null;

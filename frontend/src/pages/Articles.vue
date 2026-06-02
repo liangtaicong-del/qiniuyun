@@ -68,7 +68,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onActivated } from 'vue'
+import { ref, onMounted, onActivated, onBeforeUnmount } from 'vue'
 import { getArticles, deleteArticle } from '@/api/article'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import dayjs from 'dayjs'
@@ -118,6 +118,7 @@ const handleDelete = async (article) => {
 
 onMounted(() => { loadArticles() })
 onActivated(() => { loadArticles() })
+onBeforeUnmount(() => { clearTimeout(searchTimer) })
 </script>
 
 <style lang="scss" scoped>
